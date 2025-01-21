@@ -1,37 +1,29 @@
 class HashTable:
-    def __init__(self, size=100):
+    def __init__(self, size=40):
         self.size = size
-        self.table = [None] * self.size
+        self.table = [None] * size
 
-    def _hash(self, key):
-        """Generate a hash value for the given key."""
-        return hash(key) % self.size
+    def hash_function(self, key):
+        return key % self.size
 
-    def insert(self, key, value):
-        """Insert a key-value pair into the hash table."""
-        index = self._hash(key)
-        if self.table[index] is None:
-            self.table[index] = [(key, value)]  # Create a new list if there's no collision
+    def insert(self, package_id, delivery_address, delivery_deadline, delivery_city, delivery_zip_code, package_weight, delivery_status):
+        index = self.hash_function(package_id)
+        self.table[index] = {
+            'package_id': package_id,
+            'address': delivery_address,
+            'deadline': delivery_deadline,
+            'city': delivery_city,
+            'zip_code': delivery_zip_code,
+            'weight': package_weight,
+            'status': delivery_status
+        }
+
+    def lookup(self, package_id):
+        index = self.hash_function(package_id)
+        package = self.table[index]
+        
+        # Ensure the package exists and matches the requested ID
+        if package and package['package_id'] == package_id:
+            return package
         else:
-            # If there's a collision, append the new key-value pair to the list
-            self.table[index].append((key, value))
-
-    def search(self, key):
-        """Search for a key in the hash table and return its associated value."""
-        index = self._hash(key)
-        if self.table[index] is not None:
-            for item in self.table[index]:
-                if item[0] == key:
-                    return item[1]  # Return the value if key matches
-        return None  # Return None if the key doesn't exist
-
-    def delete(self, key):
-        """Delete a key-value pair from the hash table."""
-        index = self._hash(key)
-        if self.table[index] is not None:
-            for i, item in enumerate(self.table[index]):
-                if item[0] == key:
-                    del self.table[index][i]
-                    return True
-        return False
-
+            return None
